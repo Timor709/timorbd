@@ -15,6 +15,7 @@ import { CartProvider } from "@/lib/cart";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
+import { QuickOrderProvider } from "@/lib/quick-order";
 
 function NotFoundComponent() {
   return (
@@ -126,15 +127,17 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
-        <div className="flex min-h-screen flex-col">
-          <SiteHeader />
-          <main className="flex-1">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </main>
-          <SiteFooter />
-        </div>
-        <CartDrawer />
+        <QuickOrderProvider>
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+            </main>
+            <SiteFooter />
+          </div>
+          <CartDrawer />
+        </QuickOrderProvider>
       </CartProvider>
     </QueryClientProvider>
   );

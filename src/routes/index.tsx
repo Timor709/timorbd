@@ -19,6 +19,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Luxury watches built on precision, premium materials and quiet design.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,

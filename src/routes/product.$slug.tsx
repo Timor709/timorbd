@@ -4,6 +4,8 @@ import { Check, ShieldCheck, Truck } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatBDT, getProduct, products } from "@/lib/products";
 import { ProductCard } from "@/components/product-card";
+import { Button } from "@/components/ui/button";
+import { useQuickOrder } from "@/lib/quick-order";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: ({ params }) => {
@@ -25,6 +27,8 @@ export const Route = createFileRoute("/product/$slug")({
         { name: "description", content: product.description },
         { property: "og:title", content: title },
         { property: "og:description", content: product.description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },
@@ -34,6 +38,7 @@ export const Route = createFileRoute("/product/$slug")({
 function ProductDetail() {
   const { product } = Route.useLoaderData();
   const { addItem } = useCart();
+  const { openQuickOrder } = useQuickOrder();
   const [strap, setStrap] = useState<string>(product.straps[0] ?? "Standard");
   const [size, setSize] = useState<string>(product.sizes[0] ?? "Standard");
 
@@ -126,9 +131,10 @@ function ProductDetail() {
             </div>
           </div>
 
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <button
+          <div className="mt-10 grid grid-cols-2 gap-3">
+            <Button
               disabled={!product.inStock}
+              title={product.inStock ? "Add to Cart" : "Currently sold out"}
               onClick={() =>
                 addItem({
                   slug: product.slug,
@@ -139,13 +145,18 @@ function ProductDetail() {
                   size,
                 })
               }
-              className="btn-ember flex-1"
+              className="btn-ghost-line h-auto min-w-0 rounded-sm px-3 text-[0.68rem] sm:text-xs"
             >
-              {product.inStock ? "Add to Cart" : "Sold Out"}
-            </button>
-            <Link to="/checkout" className="btn-ghost-line flex-1">
-              Checkout
-            </Link>
+              Add to Cart
+            </Button>
+            <Button
+              disabled={!product.inStock}
+              title={product.inStock ? "Order Now" : "Currently sold out"}
+              onClick={() => openQuickOrder({ product, strap, size })}
+              className="btn-ember h-auto min-w-0 rounded-sm px-3 text-[0.68rem] sm:text-xs"
+            >
+              Order Now
+            </Button>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-6 text-xs text-muted-foreground">

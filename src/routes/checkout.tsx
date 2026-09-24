@@ -16,6 +16,8 @@ export const Route = createFileRoute("/checkout")({
       },
       { property: "og:title", content: "Checkout — TIMOR" },
       { property: "og:description", content: "Secure checkout with free delivery." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex" },
     ],
   }),

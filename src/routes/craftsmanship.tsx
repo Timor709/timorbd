@@ -15,6 +15,8 @@ export const Route = createFileRoute("/craftsmanship")({
         property: "og:description",
         content: "Hand-finished movements, premium materials, and a minimalist philosophy.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Craftsmanship,
