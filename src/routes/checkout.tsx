@@ -109,7 +109,7 @@ function Checkout() {
               Full name
             </label>
             <input id="name" name="name" maxLength={100} className="field mt-3" placeholder="Your name" />
-            {errors.name && <p className="mt-2 text-xs text-primary">{errors.name}</p>}
+            {errors["name"] && <p className="mt-2 text-xs text-primary">{errors["name"]}</p>}
           </div>
 
           <div>
@@ -124,7 +124,7 @@ function Checkout() {
               className="field mt-3"
               placeholder="01XXXXXXXXX"
             />
-            {errors.phone && <p className="mt-2 text-xs text-primary">{errors.phone}</p>}
+            {errors["phone"] && <p className="mt-2 text-xs text-primary">{errors["phone"]}</p>}
           </div>
 
           <div>
@@ -139,7 +139,9 @@ function Checkout() {
               className="field mt-3"
               placeholder="House, road, area, city"
             />
-            {errors.address && <p className="mt-2 text-xs text-primary">{errors.address}</p>}
+            {errors["address"] && (
+              <p className="mt-2 text-xs text-primary">{errors["address"]}</p>
+            )}
           </div>
 
           <div>

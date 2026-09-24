@@ -46,8 +46,8 @@ export function ProductCard({ product }: { product: Product }) {
                 name: product.name,
                 image: product.image,
                 price: product.price,
-                strap: product.straps[0],
-                size: product.sizes[0],
+                strap: product.straps[0] ?? "Standard",
+                size: product.sizes[0] ?? "Standard",
               })
             }
             className="btn-ember flex-1 px-4 py-3"

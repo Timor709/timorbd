@@ -34,8 +34,8 @@ export const Route = createFileRoute("/product/$slug")({
 function ProductDetail() {
   const { product } = Route.useLoaderData();
   const { addItem } = useCart();
-  const [strap, setStrap] = useState(product.straps[0]);
-  const [size, setSize] = useState(product.sizes[0]);
+  const [strap, setStrap] = useState<string>(product.straps[0] ?? "Standard");
+  const [size, setSize] = useState<string>(product.sizes[0] ?? "Standard");
 
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 3);
 
