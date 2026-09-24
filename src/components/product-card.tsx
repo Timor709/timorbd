@@ -1,9 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart";
+import { useQuickOrder } from "@/lib/quick-order";
 import { formatBDT, type Product } from "@/lib/products";
+import { Button } from "@/components/ui/button";
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const { openQuickOrder } = useQuickOrder();
+  const strap = product.straps[0] ?? "Standard";
+  const size = product.sizes[0] ?? "Standard";
 
   return (
     <article className="glow-hover group border border-border bg-surface">
@@ -37,8 +42,8 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{product.tagline}</p>
-        <div className="mt-5 flex gap-2">
-          <button
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          <Button
             disabled={!product.inStock}
             onClick={() =>
               addItem({
@@ -46,21 +51,21 @@ export function ProductCard({ product }: { product: Product }) {
                 name: product.name,
                 image: product.image,
                 price: product.price,
-                strap: product.straps[0] ?? "Standard",
-                size: product.sizes[0] ?? "Standard",
+                strap,
+                size,
               })
             }
-            className="btn-ember flex-1 px-4 py-3"
+            className="btn-ghost-line h-auto min-w-0 rounded-sm px-2 py-3 text-[0.62rem] sm:px-3 sm:text-[0.68rem]"
           >
             {product.inStock ? "Add to Cart" : "Sold Out"}
-          </button>
-          <Link
-            to="/product/$slug"
-            params={{ slug: product.slug }}
-            className="btn-ghost-line px-4 py-3"
+          </Button>
+          <Button
+            disabled={!product.inStock}
+            onClick={() => openQuickOrder({ product, strap, size })}
+            className="btn-ember h-auto min-w-0 rounded-sm px-2 py-3 text-[0.62rem] sm:px-3 sm:text-[0.68rem]"
           >
-            View
-          </Link>
+            {product.inStock ? "Order Now" : "Unavailable"}
+          </Button>
         </div>
       </div>
     </article>
