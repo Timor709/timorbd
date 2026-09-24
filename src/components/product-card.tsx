@@ -45,6 +45,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="mt-5 grid grid-cols-2 gap-2">
           <Button
             disabled={!product.inStock}
+            title={product.inStock ? "Add to Cart" : "Currently sold out"}
             onClick={() =>
               addItem({
                 slug: product.slug,
@@ -57,14 +58,15 @@ export function ProductCard({ product }: { product: Product }) {
             }
             className="btn-ghost-line h-auto min-w-0 rounded-sm px-2 py-3 text-[0.62rem] sm:px-3 sm:text-[0.68rem]"
           >
-            {product.inStock ? "Add to Cart" : "Sold Out"}
+            Add to Cart
           </Button>
           <Button
             disabled={!product.inStock}
+            title={product.inStock ? "Order Now" : "Currently sold out"}
             onClick={() => openQuickOrder({ product, strap, size })}
             className="btn-ember h-auto min-w-0 rounded-sm px-2 py-3 text-[0.62rem] sm:px-3 sm:text-[0.68rem]"
           >
-            {product.inStock ? "Order Now" : "Unavailable"}
+            Order Now
           </Button>
         </div>
       </div>

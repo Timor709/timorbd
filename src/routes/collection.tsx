@@ -17,6 +17,8 @@ export const Route = createFileRoute("/collection")({
         property: "og:description",
         content: "Every TIMOR timepiece, in one place. Prices in BDT, free delivery.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Collection,

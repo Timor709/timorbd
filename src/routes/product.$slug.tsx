@@ -27,6 +27,8 @@ export const Route = createFileRoute("/product/$slug")({
         { name: "description", content: product.description },
         { property: "og:title", content: title },
         { property: "og:description", content: product.description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },
@@ -132,6 +134,7 @@ function ProductDetail() {
           <div className="mt-10 grid grid-cols-2 gap-3">
             <Button
               disabled={!product.inStock}
+              title={product.inStock ? "Add to Cart" : "Currently sold out"}
               onClick={() =>
                 addItem({
                   slug: product.slug,
@@ -144,14 +147,15 @@ function ProductDetail() {
               }
               className="btn-ghost-line h-auto min-w-0 rounded-sm px-3 text-[0.68rem] sm:text-xs"
             >
-              {product.inStock ? "Add to Cart" : "Sold Out"}
+              Add to Cart
             </Button>
             <Button
               disabled={!product.inStock}
+              title={product.inStock ? "Order Now" : "Currently sold out"}
               onClick={() => openQuickOrder({ product, strap, size })}
               className="btn-ember h-auto min-w-0 rounded-sm px-3 text-[0.68rem] sm:text-xs"
             >
-              {product.inStock ? "Order Now" : "Unavailable"}
+              Order Now
             </Button>
           </div>
 
