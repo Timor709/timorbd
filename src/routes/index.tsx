@@ -4,10 +4,16 @@ import { ArrowRight } from "lucide-react";
 import heroWatch from "@/assets/hero-watch.jpg";
 import craftImg from "@/assets/craft.jpg";
 import { ProductCard } from "@/components/product-card";
+import { CategoryShowcase } from "@/components/category-showcase";
 import { productsQueryOptions } from "@/lib/products";
+import { categoriesQueryOptions } from "@/lib/categories";
 
 export const Route = createFileRoute("/")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(productsQueryOptions),
+      context.queryClient.ensureQueryData(categoriesQueryOptions),
+    ]),
   head: () => ({
     meta: [
       { title: "TIMOR — Timeless Elegance & Precision" },
