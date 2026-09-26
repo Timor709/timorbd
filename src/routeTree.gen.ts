@@ -15,6 +15,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CraftsmanshipRouteImport } from './routes/craftsmanship'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
@@ -50,6 +52,16 @@ const CollectionRoute = CollectionRouteImport.update({
 const CraftsmanshipRoute = CraftsmanshipRouteImport.update({
   id: '/craftsmanship',
   path: '/craftsmanship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -98,6 +110,8 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/product/$slug': typeof ProductSlugRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
@@ -112,6 +126,8 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
@@ -127,6 +143,8 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/product/$slug': typeof ProductSlugRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
@@ -143,6 +161,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/collection'
     | '/craftsmanship'
+    | '/login'
+    | '/signup'
     | '/admin'
     | '/product/$slug'
     | '/admin/orders'
@@ -157,6 +177,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/collection'
     | '/craftsmanship'
+    | '/login'
+    | '/signup'
     | '/product/$slug'
     | '/admin/orders'
     | '/admin/products'
@@ -171,6 +193,8 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/collection'
     | '/craftsmanship'
+    | '/login'
+    | '/signup'
     | '/_authenticated/admin'
     | '/product/$slug'
     | '/_authenticated/admin/orders'
@@ -187,6 +211,8 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   CollectionRoute: typeof CollectionRoute
   CraftsmanshipRoute: typeof CraftsmanshipRoute
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
   ProductSlugRoute: typeof ProductSlugRoute
   ApiPublicProductImageSplatRoute: typeof ApiPublicProductImageSplatRoute
 }
@@ -233,6 +259,20 @@ declare module '@tanstack/react-router' {
       path: '/craftsmanship'
       fullPath: '/craftsmanship'
       preLoaderRoute: typeof CraftsmanshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -322,6 +362,8 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   CollectionRoute: CollectionRoute,
   CraftsmanshipRoute: CraftsmanshipRoute,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
   ProductSlugRoute: ProductSlugRoute,
   ApiPublicProductImageSplatRoute: ApiPublicProductImageSplatRoute,
 }
