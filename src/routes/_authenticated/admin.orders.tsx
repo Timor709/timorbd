@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Watch } from "lucide-react";
+import { Trash2, Watch } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBDT, productsQueryOptions } from "@/lib/products";
 
@@ -29,6 +29,17 @@ function Orders() {
       return data;
     },
   });
+
+  async function deleteOrder(id: string, ref: string) {
+    if (!window.confirm(`Delete order ${ref}? This cannot be undone.`)) return;
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) toast.error("Couldn't delete the order");
+    else {
+      toast.success(`Order ${ref} deleted`);
+      qc.invalidateQueries({ queryKey: ["admin-orders"] });
+      qc.invalidateQueries({ queryKey: ["admin-stats"] });
+    }
+  }
 
   async function setStatus(id: string, status: string) {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
@@ -67,6 +78,14 @@ function Orders() {
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
+                <button
+                  onClick={() => deleteOrder(o.id, o.order_ref)}
+                  className="border border-border p-2 text-muted-foreground transition-colors hover:border-destructive hover:text-destructive"
+                  aria-label={`Delete order ${o.order_ref}`}
+                  title="Delete order"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
             </div>
             <div className="mt-4 grid gap-4 text-sm sm:grid-cols-2">

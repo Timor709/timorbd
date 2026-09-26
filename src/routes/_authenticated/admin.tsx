@@ -1,11 +1,16 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { LayoutDashboard, LogOut, Package, Settings, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { isAdmin } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  beforeLoad: async ({ context }) => {
+    const user = (context as { user?: { id: string } }).user;
+    if (!user || !(await isAdmin(user.id))) {
+      throw redirect({ to: "/admin/login" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Admin — TIMOR" },
@@ -28,48 +33,14 @@ const links = [
 ] as const;
 
 function AdminLayout() {
-  const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [claimMsg, setClaimMsg] = useState<string | null>(null);
-  const { data: admin, isLoading, refetch } = useQuery({
-    queryKey: ["is-admin", user.id],
-    queryFn: () => isAdmin(user.id),
-  });
 
   async function signOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
     navigate({ to: "/admin/login", replace: true });
-  }
-
-  async function claim() {
-    const { data, error } = await supabase.rpc("claim_first_admin");
-    if (error || !data) setClaimMsg("This store already has an owner. Ask them to give you access.");
-    else refetch();
-  }
-
-  if (isLoading) {
-    return <div className="mx-auto max-w-7xl px-5 py-20 text-muted-foreground">Loading…</div>;
-  }
-
-  if (!admin) {
-    return (
-      <div className="mx-auto max-w-lg px-5 py-24 text-center">
-        <p className="eyebrow">Restricted</p>
-        <h1 className="mt-3 text-3xl font-light">Admin access needed</h1>
-        <p className="mt-4 text-sm text-muted-foreground">
-          Signed in as {user.email}. If you're the store owner setting things up for the first
-          time, claim ownership below.
-        </p>
-        <div className="mt-8 flex justify-center gap-3">
-          <button onClick={claim} className="btn-ember">Claim store ownership</button>
-          <button onClick={signOut} className="btn-ghost-line">Sign out</button>
-        </div>
-        {claimMsg && <p className="mt-6 text-sm text-destructive">{claimMsg}</p>}
-      </div>
-    );
   }
 
   return (
