@@ -43,8 +43,11 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
         });
         if (err) throw err;
         if (!data.session) {
-          setInfo("Check your email to confirm your account, then sign in.");
-          return;
+          const { error: signInErr } = await supabase.auth.signInWithPassword({
+            email: parsed.data.email,
+            password: parsed.data.password,
+          });
+          if (signInErr) throw signInErr;
         }
       } else {
         const { error: err } = await supabase.auth.signInWithPassword({
