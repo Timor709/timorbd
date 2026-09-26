@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/products";
+import { productsQueryOptions } from "@/lib/products";
 
 export const Route = createFileRoute("/collection")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
   head: () => ({
     meta: [
       { title: "Collection — TIMOR Luxury Watches" },
