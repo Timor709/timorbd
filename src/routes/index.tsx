@@ -93,6 +93,9 @@ function Home() {
         </div>
       </section>
 
+      {/* Categories */}
+      <CategoryShowcase products={products} categories={categories} />
+
       {/* Craftsmanship */}
       <section className="ember-top border-y border-border">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 sm:px-8 lg:grid-cols-2">
