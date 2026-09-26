@@ -42,7 +42,30 @@ export function initMetaPixel(id: string) {
   activeId = id;
 }
 
+function readCookie(name: string) {
+  const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+  return m ? decodeURIComponent(m[1]) : undefined;
+}
+
+type CapiEvent = "PageView" | "ViewContent" | "AddToCart" | "InitiateCheckout" | "Purchase";
+
+/** Fires the browser Pixel and the server-side Conversions API with a shared event ID for deduplication. */
 export function trackPixel(event: string, params?: Record<string, unknown>) {
   if (typeof window === "undefined" || !window.fbq || !activeId) return;
-  window.fbq("track", event, params);
+  const eventId = `${event}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  window.fbq("track", event, params, { eventID: eventId });
+  import("./capi.functions")
+    .then(({ sendCapiEvent }) =>
+      sendCapiEvent({
+        data: {
+          event: event as CapiEvent,
+          eventId,
+          url: window.location.href,
+          fbp: readCookie("_fbp"),
+          fbc: readCookie("_fbc"),
+          customData: params,
+        },
+      }),
+    )
+    .catch(() => {});
 }

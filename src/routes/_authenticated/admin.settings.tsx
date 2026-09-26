@@ -13,42 +13,76 @@ export const Route = createFileRoute("/_authenticated/admin/settings")({
 
 function SettingsPage() {
   const { data } = useQuery({
-    queryKey: ["setting", "meta_pixel_id"],
+    queryKey: ["setting", "meta"],
     queryFn: async () => {
-      const { data } = await supabase.from("store_settings").select("value").eq("key", "meta_pixel_id").maybeSingle();
-      return data?.value ?? "";
+      const [p, t] = await Promise.all([
+        supabase.from("store_settings").select("value").eq("key", "meta_pixel_id").maybeSingle(),
+        supabase.from("private_settings").select("value").eq("key", "meta_capi_token").maybeSingle(),
+      ]);
+      return { pixel: p.data?.value ?? "", token: t.data?.value ?? "" };
     },
   });
   const [pixel, setPixel] = useState("");
+  const [token, setToken] = useState("");
+  const [show, setShow] = useState(false);
   const [saving, setSaving] = useState(false);
   useEffect(() => {
-    if (data !== undefined) setPixel(data);
+    if (data) {
+      setPixel(data.pixel);
+      setToken(data.token);
+    }
   }, [data]);
 
   async function save() {
     const value = pixel.trim();
+    const tok = token.trim();
     if (value && !isValidPixelId(value)) {
       toast.error("A Pixel ID is 10–20 digits");
       return;
     }
+    if (tok && !/^[A-Za-z0-9_-]{20,1000}$/.test(tok)) {
+      toast.error("That doesn't look like a valid access token");
+      return;
+    }
     setSaving(true);
-    const { error } = await supabase.from("store_settings").upsert({ key: "meta_pixel_id", value });
+    const [a, b] = await Promise.all([
+      supabase.from("store_settings").upsert({ key: "meta_pixel_id", value }),
+      supabase.from("private_settings").upsert({ key: "meta_capi_token", value: tok }),
+    ]);
     setSaving(false);
-    if (error) toast.error("Couldn't save");
-    else toast.success(value ? "Meta Pixel saved — live on next page load" : "Meta Pixel turned off");
+    if (a.error || b.error) toast.error("Couldn't save");
+    else toast.success("Meta settings saved — live on next page load");
   }
 
   return (
     <div className="max-w-xl">
       <h1 className="text-3xl font-light">Settings</h1>
       <div className="mt-8 border border-border bg-card p-6">
-        <p className="eyebrow">Meta Pixel</p>
+        <p className="eyebrow">Meta Pixel & Conversions API</p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Tracks PageView, ViewContent, AddToCart and Purchase. Find your ID in Meta Events Manager. Leave empty to turn off.
+          Tracks PageView, ViewContent, AddToCart and Purchase in the browser and, with a token, from the server too
+          (duplicates are merged by Meta). Find both in Meta Events Manager. Leave empty to turn off.
         </p>
         <div className="mt-6 space-y-2">
           <Label htmlFor="pixel">Pixel ID</Label>
           <Input id="pixel" inputMode="numeric" placeholder="e.g. 123456789012345" value={pixel} onChange={(e) => setPixel(e.target.value)} />
+        </div>
+        <div className="mt-5 space-y-2">
+          <Label htmlFor="capi">Conversions API access token</Label>
+          <div className="flex gap-2">
+            <Input
+              id="capi"
+              type={show ? "text" : "password"}
+              autoComplete="off"
+              placeholder="EAAB…"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+            />
+            <button type="button" onClick={() => setShow((s) => !s)} className="border border-border px-3 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground">
+              {show ? "Hide" : "Show"}
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground">Kept private — only admins can see it; it is never sent to visitors' browsers.</p>
         </div>
         <button onClick={save} disabled={saving} className="btn-ember mt-6">
           {saving ? "Saving…" : "Save"}
