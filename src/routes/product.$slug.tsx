@@ -1,16 +1,18 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Check, ShieldCheck, Truck } from "lucide-react";
 import { useCart } from "@/lib/cart";
-import { formatBDT, getProduct, products } from "@/lib/products";
+import { fetchProduct, formatBDT, productsQueryOptions } from "@/lib/products";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { useQuickOrder } from "@/lib/quick-order";
 
 export const Route = createFileRoute("/product/$slug")({
-  loader: ({ params }) => {
-    const product = getProduct(params.slug);
+  loader: async ({ params, context }) => {
+    const product = await fetchProduct(params.slug);
     if (!product) throw notFound();
+    await context.queryClient.ensureQueryData(productsQueryOptions);
     return { product };
   },
   head: ({ loaderData }) => {
@@ -42,7 +44,8 @@ function ProductDetail() {
   const [strap, setStrap] = useState<string>(product.straps[0] ?? "Standard");
   const [size, setSize] = useState<string>(product.sizes[0] ?? "Standard");
 
-  const related = products.filter((p) => p.slug !== product.slug).slice(0, 3);
+  const { data: allProducts } = useSuspenseQuery(productsQueryOptions);
+  const related = allProducts.filter((p) => p.slug !== product.slug).slice(0, 3);
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
