@@ -27,6 +27,7 @@ export const Route = createFileRoute("/collection")({
 const collections = ["All", "Noir", "Marine", "Heritage", "Essential"];
 
 function Collection() {
+  const { data: products } = useSuspenseQuery(productsQueryOptions);
   const [filter, setFilter] = useState("All");
   const list = filter === "All" ? products : products.filter((p) => p.collection === filter);
 
