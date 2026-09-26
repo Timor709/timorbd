@@ -14,9 +14,9 @@ function Dashboard() {
       const [orders, products] = await Promise.all([
         supabase
           .from("orders")
-          .select("order_ref, customer_name, total, status, created_at")
+          .select("order_ref, customer_name, total, status, created_at, items")
           .order("created_at", { ascending: false }),
-        supabase.from("products").select("id, stock, in_stock"),
+        supabase.from("products").select("id, slug, stock, in_stock"),
       ]);
       if (orders.error) throw orders.error;
       if (products.error) throw products.error;
