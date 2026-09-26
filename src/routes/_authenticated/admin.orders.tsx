@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Watch } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatBDT } from "@/lib/products";
+import { formatBDT, productsQueryOptions } from "@/lib/products";
 
 export const Route = createFileRoute("/_authenticated/admin/orders")({
   component: Orders,
@@ -10,10 +12,15 @@ export const Route = createFileRoute("/_authenticated/admin/orders")({
 
 const statuses = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
-type Item = { name: string; qty: number; price: number; strap?: string; size?: string };
+type Item = { slug?: string; name: string; qty: number; price: number; strap?: string; size?: string };
 
 function Orders() {
   const qc = useQueryClient();
+  const { data: products } = useQuery(productsQueryOptions);
+  const imageBySlug = useMemo(
+    () => new Map((products ?? []).map((p) => [p.slug, p.image])),
+    [products],
+  );
   const { data: orders, isLoading } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
@@ -68,16 +75,33 @@ function Orders() {
                 <p className="mt-1">{o.address}</p>
                 {o.note && <p className="mt-1 italic">Note: {o.note}</p>}
               </div>
-              <ul className="space-y-1">
-                {((o.items as Item[]) ?? []).map((it, i) => (
-                  <li key={i} className="flex justify-between gap-3">
-                    <span className="min-w-0 truncate">
-                      {it.qty}× {it.name}
-                      <span className="text-muted-foreground"> {[it.strap, it.size].filter(Boolean).join(" · ")}</span>
-                    </span>
-                    <span>{formatBDT(it.price * it.qty)}</span>
-                  </li>
-                ))}
+              <ul className="space-y-3">
+                {((o.items as Item[]) ?? []).map((it, i) => {
+                  const img = it.slug ? imageBySlug.get(it.slug) : undefined;
+                  return (
+                    <li key={i} className="flex items-center gap-3">
+                      {img ? (
+                        <img
+                          src={img}
+                          alt={it.name}
+                          className="h-14 w-14 shrink-0 border border-border object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center border border-border bg-background/50 text-muted-foreground">
+                          <Watch className="h-5 w-5" aria-hidden />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate">{it.qty}× {it.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {[it.strap, it.size].filter(Boolean).join(" · ") || "Standard"}
+                        </p>
+                      </div>
+                      <span className="shrink-0">{formatBDT(it.price * it.qty)}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>

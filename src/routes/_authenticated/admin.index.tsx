@@ -1,22 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Watch } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatBDT } from "@/lib/products";
+import { formatBDT, productsQueryOptions } from "@/lib/products";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: Dashboard,
 });
 
 function Dashboard() {
+  const { data: products } = useQuery(productsQueryOptions);
+  const productImages = useMemo(
+    () => new Map((products ?? []).map((p) => [p.slug, p.image])),
+    [products],
+  );
   const { data } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
       const [orders, products] = await Promise.all([
         supabase
           .from("orders")
-          .select("order_ref, customer_name, total, status, created_at")
+          .select("order_ref, customer_name, total, status, created_at, items")
           .order("created_at", { ascending: false }),
-        supabase.from("products").select("id, stock, in_stock"),
+        supabase.from("products").select("id, slug, stock, in_stock"),
       ]);
       if (orders.error) throw orders.error;
       if (products.error) throw products.error;
@@ -58,16 +65,32 @@ function Dashboard() {
       </div>
       <div className="mt-4 divide-y divide-border border border-border">
         {data?.recent.length === 0 && <p className="p-5 text-sm text-muted-foreground">No orders yet.</p>}
-        {data?.recent.map((o) => (
-          <div key={o.order_ref} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-4 p-4 text-sm">
-            <div className="min-w-0">
-              <p className="truncate">{o.customer_name}</p>
-              <p className="text-xs text-muted-foreground">{o.order_ref} · {new Date(o.created_at).toLocaleDateString()}</p>
+        {data?.recent.map((o) => {
+          const first = ((o.items as { slug?: string; name?: string }[]) ?? [])[0];
+          const img = first?.slug ? productImages.get(first.slug) : undefined;
+          return (
+            <div key={o.order_ref} className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-4 p-4 text-sm">
+              {img ? (
+                <img
+                  src={img}
+                  alt={first?.name ?? "Ordered watch"}
+                  className="h-12 w-12 shrink-0 border border-border object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-border text-muted-foreground">
+                  <Watch className="h-4 w-4" aria-hidden />
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="truncate">{o.customer_name}</p>
+                <p className="text-xs text-muted-foreground">{o.order_ref} · {new Date(o.created_at).toLocaleDateString()}</p>
+              </div>
+              <span className="text-xs uppercase tracking-[0.15em] text-muted-foreground">{o.status}</span>
+              <span>{formatBDT(o.total)}</span>
             </div>
-            <span className="text-xs uppercase tracking-[0.15em] text-muted-foreground">{o.status}</span>
-            <span>{formatBDT(o.total)}</span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
