@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { formatBDT, resolveImage } from "@/lib/products";
+import { categoriesQueryOptions } from "@/lib/categories";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
   component: ProductsAdmin,
@@ -92,14 +93,22 @@ function ProductsAdmin() {
       return data as unknown as Row[];
     },
   });
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("categories").select("id, name").order("name");
-      if (error) throw error;
-      return data;
-    },
-  });
+  const { data: categories } = useQuery(categoriesQueryOptions);
+  const [newCat, setNewCat] = useState("");
+
+  async function createCategory() {
+    const name = newCat.trim();
+    if (name.length < 2) { toast.error("Category name must be at least 2 characters"); return; }
+    const base = slugify(name) || "category";
+    let slug = base;
+    for (let i = 2; categories?.some((c) => c.slug === slug); i++) slug = `${base}-${i}`;
+    const { data, error } = await supabase.from("categories").insert({ name, slug }).select("id").single();
+    if (error || !data) { toast.error("Couldn't create category"); return; }
+    await qc.invalidateQueries({ queryKey: ["categories"] });
+    setForm((f) => (f ? { ...f, category_id: data.id } : f));
+    setNewCat("");
+    toast.success(`Category created — /collection/${slug}`);
+  }
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["admin-products"] });
@@ -244,6 +253,14 @@ function ProductsAdmin() {
                 <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="h-9 w-full border border-input bg-background px-3 text-sm">
                   {categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
+                <div className="mt-2 flex gap-2">
+                  <Input placeholder="New category name" value={newCat} maxLength={60} onChange={(e) => setNewCat(e.target.value)} />
+                  <button type="button" onClick={createCategory} className="border border-border px-3 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground">Add</button>
+                </div>
+                {(() => {
+                  const c = categories?.find((x) => x.id === form.category_id);
+                  return c ? <p className="mt-1 break-all text-xs text-muted-foreground">Page: {typeof window !== "undefined" ? window.location.origin : ""}/collection/{c.slug}</p> : null;
+                })()}
               </Field>
               <Field label="Stock">
                 <Input inputMode="numeric" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} />
