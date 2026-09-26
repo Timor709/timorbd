@@ -1,8 +1,5 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut, ShoppingBag } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { isAdmin, useAuth } from "@/lib/auth";
+import { Link } from "@tanstack/react-router";
+import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import logo from "@/assets/timor-logo.jpg.asset.json";
 
@@ -14,24 +11,6 @@ const nav = [
 
 export function SiteHeader() {
   const { count, openCart } = useCart();
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { data: admin } = useQuery({
-    queryKey: ["is-admin", user?.id],
-    queryFn: () => isAdmin(user!.id),
-    enabled: !!user,
-  });
-
-  async function signOut() {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    navigate({ to: "/", replace: true });
-  }
-
-  const pill =
-    "flex shrink-0 items-center gap-2 border border-border px-3 py-2 text-[0.7rem] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground";
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -63,15 +42,6 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
-        {!loading && user && admin && (
-          <>
-            <Link to="/admin" className={pill}>Admin</Link>
-            <button onClick={signOut} className={pill} aria-label="Log out">
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
-          </>
-        )}
         <button
           onClick={openCart}
           aria-label="Open cart"
