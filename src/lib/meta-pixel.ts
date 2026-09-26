@@ -44,7 +44,7 @@ export function initMetaPixel(id: string) {
 
 function readCookie(name: string) {
   const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
-  return m ? decodeURIComponent(m[1]) : undefined;
+  return m ? decodeURIComponent(m[1] ?? "") : undefined;
 }
 
 type CapiEvent = "PageView" | "ViewContent" | "AddToCart" | "InitiateCheckout" | "Purchase";

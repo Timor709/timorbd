@@ -24,7 +24,7 @@ export const sendCapiEvent = createServerFn({ method: "POST" })
     const accessToken = token?.value?.trim();
     if (!pixelId || !accessToken) return { sent: false };
 
-    const ip = (getRequestHeader("cf-connecting-ip") || getRequestHeader("x-forwarded-for") || "").split(",")[0].trim();
+    const ip = (getRequestHeader("cf-connecting-ip") || getRequestHeader("x-forwarded-for") || "").split(",")[0]?.trim();
     const ua = getRequestHeader("user-agent") || "";
     const body = {
       data: [
