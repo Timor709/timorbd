@@ -1,11 +1,16 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { LayoutDashboard, LogOut, Package, Settings, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { isAdmin } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  beforeLoad: async ({ context }) => {
+    const user = (context as { user?: { id: string } }).user;
+    if (!user || !(await isAdmin(user.id))) {
+      throw redirect({ to: "/admin/login" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Admin — TIMOR" },
