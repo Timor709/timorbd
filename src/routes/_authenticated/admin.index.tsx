@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useQuery } from "@tanstack/react-query";
+import { Watch } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatBDT } from "@/lib/products";
+import { formatBDT, productsQueryOptions } from "@/lib/products";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: Dashboard,
