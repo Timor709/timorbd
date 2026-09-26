@@ -20,6 +20,7 @@ export type Product = {
   straps: string[];
   sizes: string[];
   specs: { label: string; value: string }[];
+  featured: boolean;
 };
 
 const imageByFile: Record<string, string> = {
@@ -45,6 +46,7 @@ type ProductRow = {
   straps: string[];
   sizes: string[];
   specs: { label: string; value: string }[];
+  featured: boolean;
 };
 
 export function resolveImage(url: string): string {
@@ -66,13 +68,14 @@ function toProduct(row: ProductRow): Product {
     straps: row.straps ?? [],
     sizes: row.sizes ?? [],
     specs: Array.isArray(row.specs) ? row.specs : [],
+    featured: row.featured,
   };
 }
 
 async function fetchProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from("products")
-    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, stock, straps, sizes, specs")
+    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, stock, straps, sizes, specs, featured")
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data as ProductRow[]).map(toProduct);
@@ -87,7 +90,7 @@ export const productsQueryOptions = queryOptions({
 export async function fetchProduct(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from("products")
-    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, stock, straps, sizes, specs")
+    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, stock, straps, sizes, specs, featured")
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;

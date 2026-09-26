@@ -30,7 +30,9 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { data: products } = useSuspenseQuery(productsQueryOptions);
-  const featured = products.slice(0, 3);
+  const flagged = products.filter((p) => p.featured);
+  const featured = (flagged.length ? flagged : products).slice(0, 3);
+  const rest = products.filter((p) => !featured.includes(p));
 
   return (
     <div>
@@ -131,7 +133,7 @@ function Home() {
         <p className="eyebrow">The Collection</p>
         <h2 className="mt-3 text-3xl font-light sm:text-4xl">More from TIMOR</h2>
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {products.slice(3).map((p) => (
+          {rest.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}
         </div>
