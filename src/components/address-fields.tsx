@@ -9,11 +9,17 @@ import { BD_DISTRICTS, upazilasFor } from "@/lib/bd-geo";
 export function AddressFields({
   idPrefix,
   error,
+  onDistrictChange,
 }: {
   idPrefix: string;
   error?: string | undefined;
+  onDistrictChange?: (districtId: string) => void;
 }) {
-  const [districtId, setDistrictId] = useState("");
+  const [districtId, setDistrictIdState] = useState("");
+  const setDistrictId = (id: string) => {
+    setDistrictIdState(id);
+    onDistrictChange?.(id);
+  };
   const [upazilaName, setUpazilaName] = useState("");
   const [street, setStreet] = useState("");
 
