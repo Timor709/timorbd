@@ -56,7 +56,7 @@ export function ProductCard({ product }: { product: Product }) {
                 size,
               })
             }
-            className="btn-ghost-line h-auto min-w-0 rounded-sm px-2 py-3 text-[0.62rem] sm:px-3 sm:text-[0.68rem]"
+            className="btn-ghost-line h-auto min-w-0 rounded-sm px-1.5 py-2.5 text-[0.56rem] tracking-[0.08em] sm:px-3 sm:py-3 sm:text-[0.68rem] sm:tracking-[0.22em]"
           >
             Add to Cart
           </Button>
@@ -64,7 +64,7 @@ export function ProductCard({ product }: { product: Product }) {
             disabled={!product.inStock}
             title={product.inStock ? "Order Now" : "Currently sold out"}
             onClick={() => openQuickOrder({ product, strap, size })}
-            className="btn-ember h-auto min-w-0 rounded-sm px-2 py-3 text-[0.62rem] sm:px-3 sm:text-[0.68rem]"
+            className="btn-ember h-auto min-w-0 rounded-sm px-1.5 py-2.5 text-[0.56rem] tracking-[0.08em] sm:px-3 sm:py-3 sm:text-[0.68rem] sm:tracking-[0.22em]"
           >
             Order Now
           </Button>
