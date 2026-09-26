@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Watch } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatBDT } from "@/lib/products";
+import { formatBDT, productsQueryOptions } from "@/lib/products";
 
 export const Route = createFileRoute("/_authenticated/admin/orders")({
   component: Orders,
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/admin/orders")({
 
 const statuses = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
-type Item = { name: string; qty: number; price: number; strap?: string; size?: string };
+type Item = { slug?: string; name: string; qty: number; price: number; strap?: string; size?: string };
 
 function Orders() {
   const qc = useQueryClient();
