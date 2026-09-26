@@ -4,6 +4,7 @@ import {
   useMemo,
   useState,
   type ReactNode,
+  type Context,
 } from "react";
 import { CheckCircle2, Minus, Plus, ShieldCheck, Truck } from "lucide-react";
 import { z } from "zod";
@@ -28,7 +29,13 @@ type QuickOrderContextValue = {
   openQuickOrder: (selection: QuickOrderSelection) => void;
 };
 
-const QuickOrderContext = createContext<QuickOrderContextValue | null>(null);
+// Keep a single context instance across hot reloads so provider and consumers always match.
+const globalStore = globalThis as unknown as {
+  __timorQuickOrderContext?: Context<QuickOrderContextValue | null>;
+};
+const QuickOrderContext =
+  globalStore.__timorQuickOrderContext ??
+  (globalStore.__timorQuickOrderContext = createContext<QuickOrderContextValue | null>(null));
 
 const quickOrderSchema = z.object({
   name: z.string().trim().min(2, "Please enter your full name").max(100),
