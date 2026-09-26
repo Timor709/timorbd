@@ -14,7 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          address: string
+          created_at: string
+          customer_name: string
+          delivery_fee: number
+          id: string
+          items: Json
+          note: string | null
+          order_ref: string
+          payment_method: string
+          phone: string
+          status: string
+          subtotal: number
+          total: number
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          customer_name: string
+          delivery_fee?: number
+          id?: string
+          items?: Json
+          note?: string | null
+          order_ref: string
+          payment_method?: string
+          phone: string
+          status?: string
+          subtotal?: number
+          total?: number
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          customer_name?: string
+          delivery_fee?: number
+          id?: string
+          items?: Json
+          note?: string | null
+          order_ref?: string
+          payment_method?: string
+          phone?: string
+          status?: string
+          subtotal?: number
+          total?: number
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          collection: string
+          compare_at: number | null
+          created_at: string
+          description: string
+          featured: boolean
+          id: string
+          image_url: string
+          in_stock: boolean
+          name: string
+          price: number
+          sizes: string[]
+          slug: string
+          specs: Json
+          stock: number
+          straps: string[]
+          tagline: string
+        }
+        Insert: {
+          collection?: string
+          compare_at?: number | null
+          created_at?: string
+          description?: string
+          featured?: boolean
+          id?: string
+          image_url?: string
+          in_stock?: boolean
+          name: string
+          price: number
+          sizes?: string[]
+          slug: string
+          specs?: Json
+          stock?: number
+          straps?: string[]
+          tagline?: string
+        }
+        Update: {
+          collection?: string
+          compare_at?: number | null
+          created_at?: string
+          description?: string
+          featured?: boolean
+          id?: string
+          image_url?: string
+          in_stock?: boolean
+          name?: string
+          price?: number
+          sizes?: string[]
+          slug?: string
+          specs?: Json
+          stock?: number
+          straps?: string[]
+          tagline?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
