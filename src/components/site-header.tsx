@@ -63,19 +63,9 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
-        {!loading && !user && (
+        {!loading && user && admin && (
           <>
-            <Link to="/login" className={pill}>Log in</Link>
-            <Link to="/signup" className="btn-ember hidden !px-4 !py-2 sm:inline-flex">Sign up</Link>
-          </>
-        )}
-        {user && (
-          <>
-            {admin && <Link to="/admin" className={pill}>Admin</Link>}
-            <span className="hidden max-w-[10rem] items-center gap-2 truncate text-xs text-muted-foreground lg:flex" title={user.email}>
-              <User className="h-4 w-4 shrink-0" />
-              <span className="truncate">{user.email}</span>
-            </span>
+            <Link to="/admin" className={pill}>Admin</Link>
             <button onClick={signOut} className={pill} aria-label="Log out">
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Logout</span>

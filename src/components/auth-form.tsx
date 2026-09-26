@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +12,8 @@ const schema = z.object({
   fullName: z.string().trim().max(100).optional(),
 });
 
-export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
+export function AuthForm() {
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +38,7 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
           email: parsed.data.email,
           password: parsed.data.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/login`,
+            emailRedirectTo: `${window.location.origin}/admin/login`,
             data: { full_name: parsed.data.fullName },
           },
         });
@@ -74,8 +75,8 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-5 py-20">
-      <p className="eyebrow">Store access</p>
-      <h1 className="mt-3 text-4xl font-light">{mode === "signin" ? "Log in" : "Create account"}</h1>
+      <p className="eyebrow">Store manager</p>
+      <h1 className="mt-3 text-4xl font-light">{mode === "signin" ? "Admin log in" : "Set up admin account"}</h1>
       <form onSubmit={onSubmit} className="mt-10 space-y-5">
         {mode === "signup" && (
           <div className="space-y-2">
@@ -102,12 +103,13 @@ export function AuthForm({ mode }: { mode: "signin" | "signup" }) {
           {busy ? "Please wait…" : mode === "signin" ? "Log in" : "Create account"}
         </button>
       </form>
-      <Link
-        to={mode === "signin" ? "/signup" : "/login"}
-        className="mt-6 text-[0.7rem] uppercase tracking-[0.25em] text-muted-foreground hover:text-foreground"
+      <button
+        type="button"
+        onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+        className="mt-6 text-left text-[0.7rem] uppercase tracking-[0.25em] text-muted-foreground hover:text-foreground"
       >
-        {mode === "signin" ? "New here? Create an account" : "Have an account? Log in"}
-      </Link>
+        {mode === "signin" ? "First-time setup? Create the admin account" : "Have an account? Log in"}
+      </button>
     </div>
   );
 }
