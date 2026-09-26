@@ -38,9 +38,10 @@ function AdminLayout() {
   });
 
   async function signOut() {
-    await supabase.auth.signOut();
+    await queryClient.cancelQueries();
     queryClient.clear();
-    navigate({ to: "/auth" });
+    await supabase.auth.signOut();
+    navigate({ to: "/login", replace: true });
   }
 
   async function claim() {
