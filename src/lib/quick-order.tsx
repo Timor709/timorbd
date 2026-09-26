@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { formatBDT, type Product } from "@/lib/products";
+import { placeOrder } from "@/lib/orders";
 
 type QuickOrderSelection = {
   product: Product;
@@ -45,6 +46,8 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
   const [payment, setPayment] = useState<"cod" | "online">("cod");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const value = useMemo<QuickOrderContextValue>(
     () => ({
@@ -54,6 +57,7 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
         setPayment("cod");
         setErrors({});
         setOrderId(null);
+        setSubmitError(null);
       },
     }),
     [],
@@ -65,7 +69,7 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
     setOrderId(null);
   }
 
-  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const parsed = quickOrderSchema.safeParse({
@@ -75,9 +79,9 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
       payment,
     });
 
-    if (!parsed.success) {
+    if (!parsed.success || !selection) {
       const nextErrors: Record<string, string> = {};
-      for (const issue of parsed.error.issues) {
+      for (const issue of parsed.error?.issues ?? []) {
         nextErrors[String(issue.path[0])] = issue.message;
       }
       setErrors(nextErrors);
@@ -85,7 +89,35 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
     }
 
     setErrors({});
-    setOrderId(`TMR-${Math.floor(100000 + Math.random() * 900000)}`);
+    setSubmitError(null);
+    setSubmitting(true);
+    const productTotal = selection.product.price * quantity;
+    try {
+      const ref = await placeOrder({
+        customerName: parsed.data.name,
+        phone: parsed.data.phone,
+        address: parsed.data.address,
+        paymentMethod: parsed.data.payment,
+        items: [
+          {
+            slug: selection.product.slug,
+            name: selection.product.name,
+            price: selection.product.price,
+            qty: quantity,
+            strap: selection.strap,
+            size: selection.size,
+          },
+        ],
+        subtotal: productTotal,
+        deliveryFee: 0,
+        total: productTotal,
+      });
+      setOrderId(ref);
+    } catch {
+      setSubmitError("We couldn't place your order just now. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const product = selection?.product;
@@ -171,8 +203,9 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
                     <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Secure order</span>
                   </div>
 
-                  <Button type="submit" className="btn-ember h-auto w-full rounded-sm">
-                    Place order · {formatBDT(total)}
+                  {submitError && <p className="text-xs text-primary">{submitError}</p>}
+                  <Button type="submit" disabled={submitting} className="btn-ember h-auto w-full rounded-sm disabled:opacity-60">
+                    {submitting ? "Placing order…" : `Place order · ${formatBDT(total)}`}
                   </Button>
                 </div>
               </form>
