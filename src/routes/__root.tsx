@@ -16,6 +16,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { QuickOrderProvider } from "@/lib/quick-order";
+import { StoreEffects } from "@/components/store-effects";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -137,6 +139,8 @@ function RootComponent() {
             <SiteFooter />
           </div>
           <CartDrawer />
+          <StoreEffects />
+          <Toaster />
         </QuickOrderProvider>
       </CartProvider>
     </QueryClientProvider>
