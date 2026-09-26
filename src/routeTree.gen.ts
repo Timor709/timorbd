@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CraftsmanshipRouteImport } from './routes/craftsmanship'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -41,11 +40,6 @@ const AuthRoute = AuthRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollectionRoute = CollectionRouteImport.update({
-  id: '/collection',
-  path: '/collection',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CraftsmanshipRoute = CraftsmanshipRouteImport.update({
@@ -102,7 +96,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
@@ -117,7 +110,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
   '/admin/login': typeof AdminLoginRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -133,7 +125,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
@@ -150,7 +141,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
-    | '/collection'
     | '/craftsmanship'
     | '/admin'
     | '/admin/login'
@@ -165,7 +155,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
-    | '/collection'
     | '/craftsmanship'
     | '/admin/login'
     | '/product/$slug'
@@ -180,7 +169,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/checkout'
-    | '/collection'
     | '/craftsmanship'
     | '/_authenticated/admin'
     | '/admin/login'
@@ -197,7 +185,6 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
-  CollectionRoute: typeof CollectionRoute
   CraftsmanshipRoute: typeof CraftsmanshipRoute
   AdminLoginRoute: typeof AdminLoginRoute
   ProductSlugRoute: typeof ProductSlugRoute
@@ -232,13 +219,6 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/collection': {
-      id: '/collection'
-      path: '/collection'
-      fullPath: '/collection'
-      preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/craftsmanship': {
@@ -340,7 +320,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
-  CollectionRoute: CollectionRoute,
   CraftsmanshipRoute: CraftsmanshipRoute,
   AdminLoginRoute: AdminLoginRoute,
   ProductSlugRoute: ProductSlugRoute,
