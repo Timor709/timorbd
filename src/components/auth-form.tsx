@@ -65,7 +65,18 @@ export function AuthForm() {
           full_name: (u.user.user_metadata?.["full_name"] as string | undefined) ?? null,
         });
       }
-      navigate({ to: u.user && (await isAdmin(u.user.id)) ? "/admin" : "/" });
+      if (!u.user) throw new Error("Could not sign you in. Please try again.");
+      let admin = await isAdmin(u.user.id);
+      if (!admin && mode === "signup") {
+        // First-time setup: the very first account may claim store ownership.
+        const { data: claimed } = await supabase.rpc("claim_first_admin");
+        admin = !!claimed;
+      }
+      if (!admin) {
+        await supabase.auth.signOut();
+        throw new Error("This account is not authorized for the admin panel.");
+      }
+      navigate({ to: "/admin" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
