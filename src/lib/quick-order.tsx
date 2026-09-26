@@ -4,6 +4,7 @@ import {
   useMemo,
   useState,
   type ReactNode,
+  type Context,
 } from "react";
 import { CheckCircle2, Minus, Plus, ShieldCheck, Truck } from "lucide-react";
 import { z } from "zod";
@@ -30,7 +31,7 @@ type QuickOrderContextValue = {
 
 // Keep a single context instance across hot reloads so provider and consumers always match.
 const globalStore = globalThis as unknown as {
-  __timorQuickOrderContext?: React.Context<QuickOrderContextValue | null>;
+  __timorQuickOrderContext?: Context<QuickOrderContextValue | null>;
 };
 const QuickOrderContext =
   globalStore.__timorQuickOrderContext ??
