@@ -79,7 +79,7 @@ function Home() {
             View all
           </Link>
         </div>
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}
@@ -132,7 +132,7 @@ function Home() {
       <section className="mx-auto max-w-7xl px-5 py-24 sm:px-8">
         <p className="eyebrow">The Collection</p>
         <h2 className="mt-3 text-3xl font-light sm:text-4xl">More from TIMOR</h2>
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {rest.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}

@@ -207,7 +207,7 @@ function ProductDetail() {
 
       <section className="mt-28">
         <p className="eyebrow">You may also like</p>
-        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {related.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}
