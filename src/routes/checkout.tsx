@@ -6,6 +6,7 @@ import { itemKey, useCart } from "@/lib/cart";
 import { formatBDT } from "@/lib/products";
 import { placeOrder } from "@/lib/orders";
 import { AddressFields } from "@/components/address-fields";
+import { useDeliveryFee } from "@/lib/delivery";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -14,10 +15,10 @@ export const Route = createFileRoute("/checkout")({
       {
         name: "description",
         content:
-          "Complete your TIMOR order. Cash on delivery or online payment, with free nationwide delivery.",
+          "Complete your TIMOR order. Cash on delivery or online payment, with delivery anywhere in Bangladesh.",
       },
       { property: "og:title", content: "Checkout — TIMOR" },
-      { property: "og:description", content: "Secure checkout with free delivery." },
+      { property: "og:description", content: "Secure checkout with nationwide delivery." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex" },
@@ -45,7 +46,9 @@ function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const delivery = 0;
+  const [districtId, setDistrictId] = useState("");
+  const { fee } = useDeliveryFee(districtId);
+  const delivery = fee ?? 0;
   const total = subtotal + delivery;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -159,7 +162,7 @@ function Checkout() {
             {errors["phone"] && <p className="mt-2 text-xs text-primary">{errors["phone"]}</p>}
           </div>
 
-          <AddressFields idPrefix="checkout" error={errors["address"]} />
+          <AddressFields idPrefix="checkout" error={errors["address"]} onDistrictChange={setDistrictId} />
 
           <div>
             <label htmlFor="note" className="eyebrow">
@@ -246,7 +249,7 @@ function Checkout() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Delivery</span>
-              <span>{formatBDT(delivery)}</span>
+              <span>{fee === null ? "Select district" : formatBDT(delivery)}</span>
             </div>
             <div className="mt-4 flex justify-between border-t border-border pt-4 text-base">
               <span>Total</span>

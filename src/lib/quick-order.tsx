@@ -19,6 +19,7 @@ import {
 import { formatBDT, type Product } from "@/lib/products";
 import { placeOrder } from "@/lib/orders";
 import { AddressFields } from "@/components/address-fields";
+import { useDeliveryFee } from "@/lib/delivery";
 
 type QuickOrderSelection = {
   product: Product;
@@ -56,6 +57,9 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [districtId, setDistrictId] = useState("");
+  const { fee, rates } = useDeliveryFee(districtId);
+  const delivery = fee ?? 0;
 
   const value = useMemo<QuickOrderContextValue>(
     () => ({
@@ -117,8 +121,8 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
           },
         ],
         subtotal: productTotal,
-        deliveryFee: 0,
-        total: productTotal,
+        deliveryFee: delivery,
+        total: productTotal + delivery,
       });
       setOrderId(ref);
     } catch {
@@ -129,7 +133,7 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
   }
 
   const product = selection?.product;
-  const total = product ? product.price * quantity : 0;
+  const total = product ? product.price * quantity + delivery : 0;
 
   return (
     <QuickOrderContext.Provider value={value}>
@@ -172,7 +176,7 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
                     <input id="quick-phone" name="phone" autoComplete="tel" inputMode="tel" maxLength={20} className="field mt-2" placeholder="01XXXXXXXXX" />
                     {errors["phone"] && <p className="mt-1.5 text-xs text-primary">{errors["phone"]}</p>}
                   </div>
-                  <AddressFields idPrefix="quick" error={errors["address"]} />
+                  <AddressFields idPrefix="quick" error={errors["address"]} onDistrictChange={setDistrictId} />
 
                   <fieldset>
                     <legend className="eyebrow">Payment method</legend>
@@ -203,7 +207,7 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
                   </div>
 
                   <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> Free delivery (৳0)</span>
+                    <span className="flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> {fee === null ? `Delivery: Inside Dhaka ${formatBDT(rates.inside)} · Outside ${formatBDT(rates.outside)}` : `Delivery ${formatBDT(delivery)}`}</span>
                     <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Secure order</span>
                   </div>
 

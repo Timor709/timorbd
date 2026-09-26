@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { deliveryRatesQueryOptions } from "@/lib/delivery";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,6 +58,7 @@ function SettingsPage() {
   return (
     <div className="max-w-xl">
       <h1 className="text-3xl font-light">Settings</h1>
+      <DeliverySettings />
       <div className="mt-8 border border-border bg-card p-6">
         <p className="eyebrow">Meta Pixel & Conversions API</p>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -88,6 +90,61 @@ function SettingsPage() {
           {saving ? "Saving…" : "Save"}
         </button>
       </div>
+    </div>
+  );
+}
+
+function DeliverySettings() {
+  const qc = useQueryClient();
+  const { data } = useQuery(deliveryRatesQueryOptions);
+  const [inside, setInside] = useState("");
+  const [outside, setOutside] = useState("");
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    if (data) {
+      setInside(String(data.inside));
+      setOutside(String(data.outside));
+    }
+  }, [data]);
+
+  async function save() {
+    const a = Number(inside), b = Number(outside);
+    if (![a, b].every((n) => Number.isInteger(n) && n >= 0 && n <= 100000)) {
+      toast.error("Enter whole amounts in ৳ (0 for free)");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase.from("store_settings").upsert([
+      { key: "delivery_inside_dhaka", value: String(a) },
+      { key: "delivery_outside_dhaka", value: String(b) },
+    ]);
+    setSaving(false);
+    if (error) toast.error("Couldn't save");
+    else {
+      toast.success("Delivery charges saved");
+      qc.invalidateQueries({ queryKey: deliveryRatesQueryOptions.queryKey });
+    }
+  }
+
+  return (
+    <div className="mt-8 border border-border bg-card p-6">
+      <p className="eyebrow">Delivery charge</p>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Added to every order at checkout based on the customer's district. Use 0 for free delivery.
+      </p>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="d-in">Inside Dhaka (৳)</Label>
+          <Input id="d-in" inputMode="numeric" value={inside} onChange={(e) => setInside(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="d-out">Outside Dhaka (৳)</Label>
+          <Input id="d-out" inputMode="numeric" value={outside} onChange={(e) => setOutside(e.target.value)} />
+        </div>
+      </div>
+      <button onClick={save} disabled={saving} className="btn-ember mt-6">
+        {saving ? "Saving…" : "Save delivery charges"}
+      </button>
     </div>
   );
 }
