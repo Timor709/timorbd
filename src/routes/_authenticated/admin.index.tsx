@@ -58,16 +58,32 @@ function Dashboard() {
       </div>
       <div className="mt-4 divide-y divide-border border border-border">
         {data?.recent.length === 0 && <p className="p-5 text-sm text-muted-foreground">No orders yet.</p>}
-        {data?.recent.map((o) => (
-          <div key={o.order_ref} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-4 p-4 text-sm">
-            <div className="min-w-0">
-              <p className="truncate">{o.customer_name}</p>
-              <p className="text-xs text-muted-foreground">{o.order_ref} · {new Date(o.created_at).toLocaleDateString()}</p>
+        {data?.recent.map((o) => {
+          const first = ((o.items as { slug?: string; name?: string }[]) ?? [])[0];
+          const img = first?.slug ? productImages.get(first.slug) : undefined;
+          return (
+            <div key={o.order_ref} className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-4 p-4 text-sm">
+              {img ? (
+                <img
+                  src={img}
+                  alt={first?.name ?? "Ordered watch"}
+                  className="h-12 w-12 shrink-0 border border-border object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-border text-muted-foreground">
+                  <Watch className="h-4 w-4" aria-hidden />
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="truncate">{o.customer_name}</p>
+                <p className="text-xs text-muted-foreground">{o.order_ref} · {new Date(o.created_at).toLocaleDateString()}</p>
+              </div>
+              <span className="text-xs uppercase tracking-[0.15em] text-muted-foreground">{o.status}</span>
+              <span>{formatBDT(o.total)}</span>
             </div>
-            <span className="text-xs uppercase tracking-[0.15em] text-muted-foreground">{o.status}</span>
-            <span>{formatBDT(o.total)}</span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
