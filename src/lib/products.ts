@@ -12,7 +12,7 @@ export type Product = {
   name: string;
   tagline: string;
   price: number;
-  compareAt?: number;
+  compareAt?: number | undefined;
   image: string;
   collection: string;
   inStock: boolean;

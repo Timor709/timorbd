@@ -13,7 +13,7 @@ export type OrderInput = {
   customerName: string;
   phone: string;
   address: string;
-  note?: string;
+  note?: string | undefined;
   paymentMethod: "cod" | "online";
   items: OrderItem[];
   subtotal: number;
