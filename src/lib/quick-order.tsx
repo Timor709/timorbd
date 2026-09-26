@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { formatBDT, type Product } from "@/lib/products";
 import { placeOrder } from "@/lib/orders";
+import { AddressFields } from "@/components/address-fields";
 
 type QuickOrderSelection = {
   product: Product;
@@ -171,11 +172,7 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
                     <input id="quick-phone" name="phone" autoComplete="tel" inputMode="tel" maxLength={20} className="field mt-2" placeholder="01XXXXXXXXX" />
                     {errors["phone"] && <p className="mt-1.5 text-xs text-primary">{errors["phone"]}</p>}
                   </div>
-                  <div>
-                    <label htmlFor="quick-address" className="eyebrow">Delivery address</label>
-                    <textarea id="quick-address" name="address" autoComplete="street-address" rows={2} maxLength={400} className="field mt-2 resize-none" placeholder="House, road, area, city" />
-                    {errors["address"] && <p className="mt-1.5 text-xs text-primary">{errors["address"]}</p>}
-                  </div>
+                  <AddressFields idPrefix="quick" error={errors["address"]} />
 
                   <fieldset>
                     <legend className="eyebrow">Payment method</legend>

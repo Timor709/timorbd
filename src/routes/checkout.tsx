@@ -5,6 +5,7 @@ import { z } from "zod";
 import { itemKey, useCart } from "@/lib/cart";
 import { formatBDT } from "@/lib/products";
 import { placeOrder } from "@/lib/orders";
+import { AddressFields } from "@/components/address-fields";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -158,22 +159,7 @@ function Checkout() {
             {errors["phone"] && <p className="mt-2 text-xs text-primary">{errors["phone"]}</p>}
           </div>
 
-          <div>
-            <label htmlFor="address" className="eyebrow">
-              Delivery address
-            </label>
-            <textarea
-              id="address"
-              name="address"
-              rows={3}
-              maxLength={400}
-              className="field mt-3"
-              placeholder="House, road, area, city"
-            />
-            {errors["address"] && (
-              <p className="mt-2 text-xs text-primary">{errors["address"]}</p>
-            )}
-          </div>
+          <AddressFields idPrefix="checkout" error={errors["address"]} />
 
           <div>
             <label htmlFor="note" className="eyebrow">
