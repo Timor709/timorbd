@@ -22,7 +22,7 @@ export function SiteHeader() {
               alt="TIMOR"
               width={112}
               height={112}
-              className="h-12 w-auto mix-blend-screen sm:h-14"
+              className="h-16 w-auto mix-blend-screen drop-shadow-[0_0_12px_rgba(255,26,26,0.18)] sm:h-20"
             />
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
