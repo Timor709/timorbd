@@ -36,6 +36,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { data: products } = useSuspenseQuery(productsQueryOptions);
+  const { data: categories } = useSuspenseQuery(categoriesQueryOptions);
   const flagged = products.filter((p) => p.featured);
   const featured = (flagged.length ? flagged : products).slice(0, 3);
   const rest = products.filter((p) => !featured.includes(p));
