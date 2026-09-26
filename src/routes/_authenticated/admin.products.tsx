@@ -116,24 +116,24 @@ function ProductsAdmin() {
     });
   }
 
-  async function upload(file: File) {
+  async function upload(file: File): Promise<void> {
     if (!form) return;
-    if (!file.type.startsWith("image/")) return toast.error("Please choose an image");
+    if (!file.type.startsWith("image/")) return void toast.error("Please choose an image");
     setUploading(true);
     const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
     const path = `products/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from("product-images").upload(path, file, { contentType: file.type });
     setUploading(false);
-    if (error) return toast.error("Upload failed");
+    if (error) return void toast.error("Upload failed");
     setForm({ ...form, image_url: `storage:${path}` });
   }
 
-  async function save(e: FormEvent) {
+  async function save(e: FormEvent): Promise<void> {
     e.preventDefault();
     if (!form) return;
     const parsed = schema.safeParse(form);
-    if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "Check the form");
-    if (!form.image_url) return toast.error("Add a product photo");
+    if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message ?? "Check the form");
+    if (!form.image_url) return void toast.error("Add a product photo");
     const category = categories?.find((c) => c.id === form.category_id);
     const payload = {
       name: parsed.data.name,
@@ -156,7 +156,7 @@ function ProductsAdmin() {
       ? await supabase.from("products").update(payload).eq("id", form.id)
       : await supabase.from("products").insert(payload);
     setSaving(false);
-    if (error) return toast.error(error.code === "23505" ? "That link name is already used" : "Couldn't save product");
+    if (error) return void toast.error(error.code === "23505" ? "That link name is already used" : "Couldn't save product");
     toast.success(form.id ? "Product updated" : "Product added");
     setForm(null);
     refresh();
