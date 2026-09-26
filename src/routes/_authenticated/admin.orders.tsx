@@ -1,0 +1,131 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Trash2, Watch } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { formatBDT, productsQueryOptions } from "@/lib/products";
+
+export const Route = createFileRoute("/_authenticated/admin/orders")({
+  component: Orders,
+});
+
+const statuses = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
+
+type Item = { slug?: string; name: string; qty: number; price: number; strap?: string; size?: string };
+
+function Orders() {
+  const qc = useQueryClient();
+  const { data: products } = useQuery(productsQueryOptions);
+  const imageBySlug = useMemo(
+    () => new Map((products ?? []).map((p) => [p.slug, p.image])),
+    [products],
+  );
+  const { data: orders, isLoading } = useQuery({
+    queryKey: ["admin-orders"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  async function deleteOrder(id: string, ref: string) {
+    if (!window.confirm(`Delete order ${ref}? This cannot be undone.`)) return;
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) toast.error("Couldn't delete the order");
+    else {
+      toast.success(`Order ${ref} deleted`);
+      qc.invalidateQueries({ queryKey: ["admin-orders"] });
+      qc.invalidateQueries({ queryKey: ["admin-stats"] });
+    }
+  }
+
+  async function setStatus(id: string, status: string) {
+    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+    if (error) toast.error("Couldn't update status");
+    else {
+      toast.success(`Order marked ${status}`);
+      qc.invalidateQueries({ queryKey: ["admin-orders"] });
+      qc.invalidateQueries({ queryKey: ["admin-stats"] });
+    }
+  }
+
+  return (
+    <div>
+      <h1 className="text-3xl font-light">Orders</h1>
+      {isLoading && <p className="mt-6 text-muted-foreground">Loading…</p>}
+      {orders?.length === 0 && <p className="mt-6 text-muted-foreground">No orders yet.</p>}
+      <div className="mt-8 space-y-4">
+        {orders?.map((o) => (
+          <div key={o.id} className="border border-border bg-card p-5">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-lg">{o.customer_name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {o.order_ref} · {new Date(o.created_at).toLocaleString()} · {o.payment_method === "cod" ? "Cash on Delivery" : "Online payment"}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-lg">{formatBDT(o.total)}</span>
+                <select
+                  value={o.status}
+                  onChange={(e) => setStatus(o.id, e.target.value)}
+                  className="border border-border bg-background px-3 py-2 text-xs uppercase tracking-[0.15em]"
+                  aria-label="Order status"
+                >
+                  {statuses.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => deleteOrder(o.id, o.order_ref)}
+                  className="border border-border p-2 text-muted-foreground transition-colors hover:border-destructive hover:text-destructive"
+                  aria-label={`Delete order ${o.order_ref}`}
+                  title="Delete order"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+              <div className="text-muted-foreground">
+                <p>{o.phone}</p>
+                <p className="mt-1">{o.address}</p>
+                {o.note && <p className="mt-1 italic">Note: {o.note}</p>}
+              </div>
+              <ul className="space-y-3">
+                {((o.items as Item[]) ?? []).map((it, i) => {
+                  const img = it.slug ? imageBySlug.get(it.slug) : undefined;
+                  return (
+                    <li key={i} className="flex items-center gap-3">
+                      {img ? (
+                        <img
+                          src={img}
+                          alt={it.name}
+                          className="h-14 w-14 shrink-0 border border-border object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center border border-border bg-background/50 text-muted-foreground">
+                          <Watch className="h-5 w-5" aria-hidden />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate">{it.qty}× {it.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {[it.strap, it.size].filter(Boolean).join(" · ") || "Standard"}
+                        </p>
+                      </div>
+                      <span className="shrink-0">{formatBDT(it.price * it.qty)}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
