@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import heroWatch from "@/assets/hero-watch.jpg";
 import craftImg from "@/assets/craft.jpg";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/products";
+import { productsQueryOptions } from "@/lib/products";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions),
   head: () => ({
     meta: [
       { title: "TIMOR — Timeless Elegance & Precision" },
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const { data: products } = useSuspenseQuery(productsQueryOptions);
   const featured = products.slice(0, 3);
 
   return (
