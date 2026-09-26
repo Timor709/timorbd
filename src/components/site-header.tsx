@@ -42,15 +42,6 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
-        {!loading && user && admin && (
-          <>
-            <Link to="/admin" className={pill}>Admin</Link>
-            <button onClick={signOut} className={pill} aria-label="Log out">
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
-          </>
-        )}
         <button
           onClick={openCart}
           aria-label="Open cart"
