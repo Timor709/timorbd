@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { formatBDT, resolveImage } from "@/lib/products";
-import { categoriesQueryOptions, slugify } from "@/lib/categories";
+import { categoriesQueryOptions } from "@/lib/categories";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
   component: ProductsAdmin,
