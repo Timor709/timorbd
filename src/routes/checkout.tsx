@@ -4,6 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 import { z } from "zod";
 import { itemKey, useCart } from "@/lib/cart";
 import { formatBDT } from "@/lib/products";
+import { placeOrder } from "@/lib/orders";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -40,11 +41,13 @@ function Checkout() {
   const [payment, setPayment] = useState<"cod" | "online">("cod");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const delivery = 0;
   const total = subtotal + delivery;
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const parsed = schema.safeParse({
@@ -65,8 +68,34 @@ function Checkout() {
     }
 
     setErrors({});
-    setOrderId(`TMR-${Math.floor(100000 + Math.random() * 900000)}`);
-    clearCart();
+    setSubmitError(null);
+    setSubmitting(true);
+    try {
+      const ref = await placeOrder({
+        customerName: parsed.data.name,
+        phone: parsed.data.phone,
+        address: parsed.data.address,
+        note: parsed.data.note,
+        paymentMethod: parsed.data.payment,
+        items: items.map((item) => ({
+          slug: item.slug,
+          name: item.name,
+          price: item.price,
+          qty: item.qty,
+          strap: item.strap,
+          size: item.size,
+        })),
+        subtotal,
+        deliveryFee: delivery,
+        total,
+      });
+      setOrderId(ref);
+      clearCart();
+    } catch {
+      setSubmitError("We couldn't place your order just now. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (orderId) {
@@ -177,8 +206,9 @@ function Checkout() {
             </div>
           </div>
 
-          <button type="submit" className="btn-ember w-full">
-            Place order · {formatBDT(total)}
+          {submitError && <p className="text-xs text-primary">{submitError}</p>}
+          <button type="submit" disabled={submitting} className="btn-ember w-full disabled:opacity-60">
+            {submitting ? "Placing order…" : `Place order · ${formatBDT(total)}`}
           </button>
         </form>
 
