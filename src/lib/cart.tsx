@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { trackPixel } from "@/lib/meta-pixel";
 
 export type CartItem = {
   slug: string;
@@ -60,6 +61,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const addItem = useCallback((item: Omit<CartItem, "qty">, qty = 1) => {
+    trackPixel("AddToCart", {
+      content_ids: [item.slug],
+      content_name: item.name,
+      content_type: "product",
+      value: item.price * qty,
+      currency: "BDT",
+    });
     setItems((prev) => {
       const key = itemKey(item);
       const found = prev.find((i) => itemKey(i) === key);

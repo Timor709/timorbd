@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { trackPixel } from "@/lib/meta-pixel";
 import { Check, ShieldCheck, Truck } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { fetchProduct, formatBDT, productsQueryOptions } from "@/lib/products";
@@ -45,6 +46,16 @@ function ProductDetail() {
   const [size, setSize] = useState<string>(product.sizes[0] ?? "Standard");
 
   const { data: allProducts } = useSuspenseQuery(productsQueryOptions);
+
+  useEffect(() => {
+    trackPixel("ViewContent", {
+      content_ids: [product.slug],
+      content_name: product.name,
+      content_type: "product",
+      value: product.price,
+      currency: "BDT",
+    });
+  }, [product.slug, product.name, product.price]);
   const related = allProducts.filter((p) => p.slug !== product.slug).slice(0, 3);
 
   return (

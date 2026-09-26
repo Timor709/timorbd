@@ -20,6 +20,7 @@ export type Product = {
   straps: string[];
   sizes: string[];
   specs: { label: string; value: string }[];
+  featured: boolean;
 };
 
 const imageByFile: Record<string, string> = {
@@ -41,10 +42,17 @@ type ProductRow = {
   image_url: string;
   collection: string;
   in_stock: boolean;
+  stock: number;
   straps: string[];
   sizes: string[];
   specs: { label: string; value: string }[];
+  featured: boolean;
 };
+
+export function resolveImage(url: string): string {
+  if (url.startsWith("storage:")) return `/api/public/product-image/${url.slice(8)}`;
+  return imageByFile[url] ?? url;
+}
 
 function toProduct(row: ProductRow): Product {
   return {
@@ -53,20 +61,21 @@ function toProduct(row: ProductRow): Product {
     tagline: row.tagline,
     price: row.price,
     compareAt: row.compare_at ?? undefined,
-    image: imageByFile[row.image_url] ?? row.image_url,
+    image: resolveImage(row.image_url),
     collection: row.collection,
-    inStock: row.in_stock,
+    inStock: row.in_stock && row.stock > 0,
     description: row.description,
     straps: row.straps ?? [],
     sizes: row.sizes ?? [],
     specs: Array.isArray(row.specs) ? row.specs : [],
+    featured: row.featured,
   };
 }
 
 async function fetchProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from("products")
-    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, straps, sizes, specs")
+    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, stock, straps, sizes, specs, featured")
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data as ProductRow[]).map(toProduct);
@@ -75,13 +84,13 @@ async function fetchProducts(): Promise<Product[]> {
 export const productsQueryOptions = queryOptions({
   queryKey: ["products"],
   queryFn: fetchProducts,
-  staleTime: 60_000,
+  staleTime: 10_000,
 });
 
 export async function fetchProduct(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from("products")
-    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, straps, sizes, specs")
+    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, stock, straps, sizes, specs, featured")
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;

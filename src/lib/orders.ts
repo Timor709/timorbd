@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { trackPixel } from "@/lib/meta-pixel";
 
 export type OrderItem = {
   slug: string;
@@ -36,5 +37,12 @@ export async function placeOrder(input: OrderInput): Promise<string> {
     total: input.total,
   });
   if (error) throw error;
+  trackPixel("Purchase", {
+    value: input.total,
+    currency: "BDT",
+    content_ids: input.items.map((i) => i.slug),
+    content_type: "product",
+    num_items: input.items.reduce((n, i) => n + i.qty, 0),
+  });
   return orderRef;
 }
