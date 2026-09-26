@@ -15,6 +15,11 @@ type Item = { slug?: string; name: string; qty: number; price: number; strap?: s
 
 function Orders() {
   const qc = useQueryClient();
+  const { data: products } = useQuery(productsQueryOptions);
+  const imageBySlug = useMemo(
+    () => new Map((products ?? []).map((p) => [p.slug, p.image])),
+    [products],
+  );
   const { data: orders, isLoading } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
