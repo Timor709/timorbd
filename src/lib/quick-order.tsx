@@ -19,6 +19,7 @@ import {
 import { formatBDT, type Product } from "@/lib/products";
 import { placeOrder } from "@/lib/orders";
 import { AddressFields } from "@/components/address-fields";
+import { useDeliveryFee } from "@/lib/delivery";
 
 type QuickOrderSelection = {
   product: Product;
@@ -56,6 +57,9 @@ export function QuickOrderProvider({ children }: { children: ReactNode }) {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [districtId, setDistrictId] = useState("");
+  const { fee, rates } = useDeliveryFee(districtId);
+  const delivery = fee ?? 0;
 
   const value = useMemo<QuickOrderContextValue>(
     () => ({

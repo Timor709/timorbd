@@ -15,10 +15,10 @@ export const Route = createFileRoute("/checkout")({
       {
         name: "description",
         content:
-          "Complete your TIMOR order. Cash on delivery or online payment, with free nationwide delivery.",
+          "Complete your TIMOR order. Cash on delivery or online payment, with delivery anywhere in Bangladesh.",
       },
       { property: "og:title", content: "Checkout — TIMOR" },
-      { property: "og:description", content: "Secure checkout with free delivery." },
+      { property: "og:description", content: "Secure checkout with nationwide delivery." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex" },

@@ -57,6 +57,7 @@ function SettingsPage() {
   return (
     <div className="max-w-xl">
       <h1 className="text-3xl font-light">Settings</h1>
+      <DeliverySettings />
       <div className="mt-8 border border-border bg-card p-6">
         <p className="eyebrow">Meta Pixel & Conversions API</p>
         <p className="mt-3 text-sm text-muted-foreground">
