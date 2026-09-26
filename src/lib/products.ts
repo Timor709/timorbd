@@ -15,6 +15,7 @@ export type Product = {
   compareAt?: number | undefined;
   image: string;
   collection: string;
+  categoryId: string | null;
   inStock: boolean;
   description: string;
   straps: string[];
@@ -41,6 +42,7 @@ type ProductRow = {
   description: string;
   image_url: string;
   collection: string;
+  category_id: string | null;
   in_stock: boolean;
   stock: number;
   straps: string[];
@@ -63,6 +65,7 @@ function toProduct(row: ProductRow): Product {
     compareAt: row.compare_at ?? undefined,
     image: resolveImage(row.image_url),
     collection: row.collection,
+    categoryId: row.category_id,
     inStock: row.in_stock && row.stock > 0,
     description: row.description,
     straps: row.straps ?? [],
@@ -75,7 +78,7 @@ function toProduct(row: ProductRow): Product {
 async function fetchProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from("products")
-    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, stock, straps, sizes, specs, featured")
+    .select("slug, name, tagline, price, compare_at, description, image_url, collection, category_id, in_stock, stock, straps, sizes, specs, featured")
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data as ProductRow[]).map(toProduct);
@@ -90,7 +93,7 @@ export const productsQueryOptions = queryOptions({
 export async function fetchProduct(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from("products")
-    .select("slug, name, tagline, price, compare_at, description, image_url, collection, in_stock, stock, straps, sizes, specs, featured")
+    .select("slug, name, tagline, price, compare_at, description, image_url, collection, category_id, in_stock, stock, straps, sizes, specs, featured")
     .eq("slug", slug)
     .maybeSingle();
   if (error) throw error;
