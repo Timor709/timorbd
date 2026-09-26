@@ -1,4 +1,4 @@
-import {
+import { type Context,
   createContext,
   useCallback,
   useContext,
@@ -32,7 +32,13 @@ type CartContextValue = {
   clearCart: () => void;
 };
 
-const CartContext = createContext<CartContextValue | null>(null);
+// Persist across hot reloads so provider and consumers share one context.
+const cartStore = globalThis as unknown as {
+  __timorCartContext?: Context<CartContextValue | null>;
+};
+const CartContext =
+  cartStore.__timorCartContext ??
+  (cartStore.__timorCartContext = createContext<CartContextValue | null>(null));
 const STORAGE_KEY = "timor-cart-v1";
 
 export function itemKey(item: Pick<CartItem, "slug" | "strap" | "size">) {
