@@ -23,14 +23,14 @@ export function ProductCard({ product }: { product: Product }) {
           loading="lazy"
           width={912}
           height={1104}
-          className="h-80 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="h-44 w-full object-cover transition-transform duration-700 group-hover:scale-105 sm:h-80"
         />
       </Link>
-      <div className="p-5">
-        <p className="eyebrow">{product.collection}</p>
-        <div className="mt-2 flex items-start justify-between gap-3">
+      <div className="p-3 sm:p-5">
+        <p className="eyebrow text-[0.6rem] sm:text-[0.7rem]">{product.collection}</p>
+        <div className="mt-2 flex items-start justify-between gap-2">
           <Link to="/product/$slug" params={{ slug: product.slug }} className="min-w-0">
-            <h3 className="truncate text-lg">{product.name}</h3>
+            <h3 className="truncate text-base sm:text-lg">{product.name}</h3>
           </Link>
           <div className="shrink-0 text-right">
             <p className="text-sm">{formatBDT(product.price)}</p>
@@ -41,8 +41,8 @@ export function ProductCard({ product }: { product: Product }) {
             )}
           </div>
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">{product.tagline}</p>
-        <div className="mt-5 grid grid-cols-2 gap-2">
+        <p className="mt-1 truncate text-xs text-muted-foreground">{product.tagline}</p>
+        <div className="mt-3 grid grid-cols-2 gap-1.5 sm:mt-5 sm:gap-2">
           <Button
             disabled={!product.inStock}
             title={product.inStock ? "Add to Cart" : "Currently sold out"}
