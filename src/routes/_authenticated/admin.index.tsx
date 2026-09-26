@@ -9,6 +9,11 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 });
 
 function Dashboard() {
+  const { data: products } = useQuery(productsQueryOptions);
+  const productImages = useMemo(
+    () => new Map((products ?? []).map((p) => [p.slug, p.image])),
+    [products],
+  );
   const { data } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
