@@ -13,12 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CraftsmanshipRouteImport } from './routes/craftsmanship'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as CollectionIndexRouteImport } from './routes/collection.index'
+import { Route as CollectionCategoryRouteImport } from './routes/collection.$category'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin.categories'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin.products'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
@@ -43,11 +45,6 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CollectionRoute = CollectionRouteImport.update({
-  id: '/collection',
-  path: '/collection',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CraftsmanshipRoute = CraftsmanshipRouteImport.update({
   id: '/craftsmanship',
   path: '/craftsmanship',
@@ -63,6 +60,16 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionIndexRoute = CollectionIndexRouteImport.update({
+  id: '/collection/',
+  path: '/collection/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionCategoryRoute = CollectionCategoryRouteImport.update({
+  id: '/collection/$category',
+  path: '/collection/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
   id: '/product/$slug',
   path: '/product/$slug',
@@ -73,6 +80,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminCategoriesRoute =
+  AuthenticatedAdminCategoriesRouteImport.update({
+    id: '/categories',
+    path: '/categories',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminOrdersRoute =
   AuthenticatedAdminOrdersRouteImport.update({
     id: '/orders',
@@ -102,11 +115,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/collection/$category': typeof CollectionCategoryRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/collection/': typeof CollectionIndexRoute
+  '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -117,10 +132,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
   '/admin/login': typeof AdminLoginRoute
+  '/collection/$category': typeof CollectionCategoryRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/collection': typeof CollectionIndexRoute
+  '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -133,11 +150,13 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRoute
   '/craftsmanship': typeof CraftsmanshipRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/collection/$category': typeof CollectionCategoryRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/collection/': typeof CollectionIndexRoute
+  '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
@@ -150,11 +169,13 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
-    | '/collection'
     | '/craftsmanship'
     | '/admin'
     | '/admin/login'
+    | '/collection/$category'
     | '/product/$slug'
+    | '/collection/'
+    | '/admin/categories'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/settings'
@@ -165,10 +186,12 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
-    | '/collection'
     | '/craftsmanship'
     | '/admin/login'
+    | '/collection/$category'
     | '/product/$slug'
+    | '/collection'
+    | '/admin/categories'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/settings'
@@ -180,11 +203,13 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/checkout'
-    | '/collection'
     | '/craftsmanship'
     | '/_authenticated/admin'
     | '/admin/login'
+    | '/collection/$category'
     | '/product/$slug'
+    | '/collection/'
+    | '/_authenticated/admin/categories'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/products'
     | '/_authenticated/admin/settings'
@@ -197,10 +222,11 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
-  CollectionRoute: typeof CollectionRoute
   CraftsmanshipRoute: typeof CraftsmanshipRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  CollectionCategoryRoute: typeof CollectionCategoryRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  CollectionIndexRoute: typeof CollectionIndexRoute
   ApiPublicProductImageSplatRoute: typeof ApiPublicProductImageSplatRoute
 }
 
@@ -234,13 +260,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/collection': {
-      id: '/collection'
-      path: '/collection'
-      fullPath: '/collection'
-      preLoaderRoute: typeof CollectionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/craftsmanship': {
       id: '/craftsmanship'
       path: '/craftsmanship'
@@ -262,6 +281,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collection/': {
+      id: '/collection/'
+      path: '/collection'
+      fullPath: '/collection/'
+      preLoaderRoute: typeof CollectionIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collection/$category': {
+      id: '/collection/$category'
+      path: '/collection/$category'
+      fullPath: '/collection/$category'
+      preLoaderRoute: typeof CollectionCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$slug': {
       id: '/product/$slug'
       path: '/product/$slug'
@@ -274,6 +307,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/categories': {
+      id: '/_authenticated/admin/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AuthenticatedAdminCategoriesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/orders': {
@@ -308,6 +348,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminCategoriesRoute: typeof AuthenticatedAdminCategoriesRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
@@ -315,6 +356,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminCategoriesRoute: AuthenticatedAdminCategoriesRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRoute,
   AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
@@ -340,10 +382,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
-  CollectionRoute: CollectionRoute,
   CraftsmanshipRoute: CraftsmanshipRoute,
   AdminLoginRoute: AdminLoginRoute,
+  CollectionCategoryRoute: CollectionCategoryRoute,
   ProductSlugRoute: ProductSlugRoute,
+  CollectionIndexRoute: CollectionIndexRoute,
   ApiPublicProductImageSplatRoute: ApiPublicProductImageSplatRoute,
 }
 export const routeTree = rootRouteImport
