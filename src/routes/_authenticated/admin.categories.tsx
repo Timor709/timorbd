@@ -33,9 +33,9 @@ function CategoriesPage() {
     e.preventDefault();
     const name = form.name.trim();
     const slug = slugify(form.slug || name);
-    if (name.length < 2 || name.length > 60) return toast.error("Name must be 2–60 characters");
-    if (!slug) return toast.error("Enter a valid URL slug");
-    if (categories.some((c) => c.slug === slug && c.id !== form.id)) return toast.error("That URL slug is already used");
+    if (name.length < 2 || name.length > 60) { toast.error("Name must be 2–60 characters"); return; }
+    if (!slug) { toast.error("Enter a valid URL slug"); return; }
+    if (categories.some((c) => c.slug === slug && c.id !== form.id)) { toast.error("That URL slug is already used"); return; }
     setSaving(true);
     const row = { name, slug, description: form.description.trim().slice(0, 300) };
     const { error } = form.id
@@ -46,7 +46,7 @@ function CategoriesPage() {
       await supabase.from("products").update({ collection: name }).eq("category_id", form.id);
     }
     setSaving(false);
-    if (error) return toast.error("Couldn't save category");
+    if (error) { toast.error("Couldn't save category"); return; }
     toast.success(form.id ? "Category updated" : "Category added");
     setForm(empty);
     setSlugTouched(false);
@@ -61,7 +61,7 @@ function CategoriesPage() {
     if (!window.confirm(msg)) return;
     await supabase.from("products").update({ category_id: null }).eq("category_id", c.id);
     const { error } = await supabase.from("categories").delete().eq("id", c.id);
-    if (error) return toast.error("Couldn't delete category");
+    if (error) { toast.error("Couldn't delete category"); return; }
     toast.success("Category deleted");
     if (form.id === c.id) setForm(empty);
     refresh();
