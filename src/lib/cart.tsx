@@ -1,4 +1,4 @@
-import {
+import { type Context,
   createContext,
   useCallback,
   useContext,
@@ -34,7 +34,7 @@ type CartContextValue = {
 
 // Persist across hot reloads so provider and consumers share one context.
 const cartStore = globalThis as unknown as {
-  __timorCartContext?: React.Context<CartContextValue | null>;
+  __timorCartContext?: Context<CartContextValue | null>;
 };
 const CartContext =
   cartStore.__timorCartContext ??
