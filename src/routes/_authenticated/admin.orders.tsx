@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Watch } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
