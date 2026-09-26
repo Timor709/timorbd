@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LogOut, ShoppingBag, User } from "lucide-react";
+import { LogOut, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { isAdmin, useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
