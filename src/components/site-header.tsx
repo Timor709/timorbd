@@ -14,15 +14,15 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 sm:px-8">
-        <div className="flex min-w-0 items-center gap-8">
+      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 sm:px-8">
+        <div className="flex min-w-0 items-center gap-10">
           <Link to="/" className="shrink-0">
             <img
               src={logo.url}
               alt="TIMOR"
               width={112}
               height={112}
-              className="h-9 w-auto mix-blend-screen"
+              className="h-12 w-auto mix-blend-screen sm:h-14"
             />
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
