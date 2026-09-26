@@ -28,7 +28,13 @@ type QuickOrderContextValue = {
   openQuickOrder: (selection: QuickOrderSelection) => void;
 };
 
-const QuickOrderContext = createContext<QuickOrderContextValue | null>(null);
+// Keep a single context instance across hot reloads so provider and consumers always match.
+const globalStore = globalThis as unknown as {
+  __timorQuickOrderContext?: React.Context<QuickOrderContextValue | null>;
+};
+const QuickOrderContext =
+  globalStore.__timorQuickOrderContext ??
+  (globalStore.__timorQuickOrderContext = createContext<QuickOrderContextValue | null>(null));
 
 const quickOrderSchema = z.object({
   name: z.string().trim().min(2, "Please enter your full name").max(100),
